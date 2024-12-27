@@ -1,0 +1,8 @@
+{
+   "files.associations": {
+      "*.embeddedhtml": "html",
+      "infix_to_rpn.h": "c",
+      "utilities.h": "c",
+      "brigde.h": "c"
+   }
+}

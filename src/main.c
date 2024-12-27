@@ -2,12 +2,15 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include "infix_to_rpn.h"
+#include "brigde.h"
 #include "utilities.h"
 #include "rpn_to_infix.h"
-#include "infix_to_rpn.h"
 
 int main(void){
+   while (1){
     char expr[500];
+    
     printf("\n========== RPN To Infix Converter ==========\n");
     printf("Valid characters: lowercase alphabet (a-z), +, -, *, /, ^, (, and )\n");
     printf("Please input your expression to convert: ");
@@ -29,32 +32,45 @@ int main(void){
         expr[strlen(expr) - 1] = '\0';
     }
     
-    printf("[1]: Convert from Reverse Polish Notation to Infix Notation\n");
-    printf("[2]: Convert from Infix Notation to Reverse Polish Notation\n\n");
-    printf("Your selection: ");
+   //  printf("[1]: Convert from Reverse Polish Notation to Infix Notation\n");
+   //  printf("[2]: Convert from Infix Notation to Reverse Polish Notation\n\n");
+   //  printf("Your selection: ");
 
-    uint8_t option = getchar();
+   //  uint8_t option = getchar();
     
-    while ((option != '1') && (option != '2')){
-        if (option != '\n'){
-            printf("Invalid option. Please select either '1' or '2': ");
-        }
-        option = getchar();
-    }
+   // while ((option != '1') && (option != '2')){
+   //      if (option != '\n'){
+   //          printf("Invalid option. Please select either '1' or '2': ");
+   //      }
+   //      option = getchar();
+   //  }
     printf("\n");
-    
-    if (option == '1'){
-        char *result = rpn_to_infix(expr);
-        printf("RPN: %s\n",expr);
+    Mapping mappings[26];
+    int mapping_count = 0;
+    char *exprs = parse_and_replace_rpn(expr, mappings, &mapping_count);
+   // printf(exprs); 
+
+
+    if (is_valid_rpn_expr(exprs)){
+        char *result = rpn_to_infix(exprs);
+        printf("RPN: %s\n",exprs);
+        replace_letters_with_numbers(result, mappings, mapping_count);
         printf("Infix: %s\n",result);
         free(result);
 
-    } else if (option == '2'){
-        char *result = infix_to_rpn(expr);
-        printf("Infix: %s\n",expr);
+    } else if (is_valid_infix_expr(exprs)){
+        char *result = infix_to_rpn(exprs);
+        printf("Infix: %s\n",exprs);
+        replace_letters_with_numbers(result, mappings, mapping_count);
         printf("RPN: %s\n",result);
         free(result);
     }
+    else{
+      print_error("Invalid RPN or Infix expression");
+    }
+
     printf("\n");
+    free(exprs);
+    }
     return 0;
 }
