@@ -1,0 +1,41 @@
+# Compiler
+# rename file to makefile before use
+CC := gcc
+
+# Directories
+SRCDIR := src
+BUILDDIR := build
+
+# Target Executable
+TARGET := convert.exe  # Windows executable
+
+# Find all .c source files
+SOURCES := $(wildcard $(SRCDIR)/*.c)
+OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.c=.o))
+
+# Check if sources exist
+ifeq ($(strip $(SOURCES)),)
+$(error No source files found in $(SRCDIR))
+endif
+
+# Compiler Flags
+CFLAGS := -std=c99 -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-overflow -fstack-protector -O2
+LIBS := -lm -lpthread -Wl,-subsystem,console
+INC := -I include
+
+# Build everything
+all: $(TARGET)
+
+# Link the final executable
+$(TARGET): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
+
+# Compile .c files into .o files
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+	@$(shell mkdir $(BUILDDIR) 2>nul || exit 0)
+	$(CC) $(CFLAGS) -c $< -o $@ $(INC)
+
+# Clean build files
+.PHONY: clean
+clean:
+	@rm -rf $(BUILDDIR) $(TARGET)
